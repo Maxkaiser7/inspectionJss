@@ -11,7 +11,9 @@ export const createTable = async (db) => {
       clientName TEXT,
       address TEXT,
       photoUri TEXT,
-      date TEXT
+      date TEXT,
+      buildingType TEXT,
+      floor TEXT,
     );
   `);
   console.log('✅ Table créée');
@@ -20,8 +22,8 @@ export const createTable = async (db) => {
 export const saveInspection = async (db, clientName, address, photoUri) => {
   const date = new Date().toISOString();
   const result = await db.runAsync(
-    'INSERT INTO inspections (clientName, address, photoUri, date) VALUES (?, ?, ?, ?)',
-    [clientName, address, photoUri, date]
+    `INSERT INTO inspections (clientName, address, facadePhotoUri, buildingType, floor) VALUES (?, ?, ?, ?, ?)`,
+    [clientName, address, facadePhotoUri, buildingType, floor]
   );
   return result;
 };
