@@ -4,30 +4,11 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "development": {
-      "developmentClient": true,
+    "tablet-test": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
-      "environment": "development"
-    },
-    "preview": {
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "environment": "preview"
-    },
-    "production": {
-      "autoIncrement": true,
-      "android": {
-        "buildType": "app-bundle"
-      },
-      "environment": "production"
+      }
     }
-  },
-  "submit": {
-    "production": {}
   }
 }
