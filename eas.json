@@ -1,6 +1,14 @@
-"tablet-test": {
-  "distribution": "internal",
-  "android": {
-    "buildType": "apk"
+{
+  "cli": {
+    "version": ">= 16.18.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "tablet-test": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    }
   }
 }
