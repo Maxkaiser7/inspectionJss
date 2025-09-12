@@ -1,23 +1,65 @@
-import * as FileSystem from "expo-file-system"; // ✅ ajoute ça
+import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
-import { Image, ScrollView, Text, View } from "react-native";
-import { Button, IconButton, TextInput } from "react-native-paper";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Button, IconButton } from "react-native-paper";
 
 export default function CameraPathStepsBlock({ initialData, onChange }) {
   const [steps, setSteps] = useState(initialData || []);
+  const [showMore, setShowMore] = useState(false);
 
-  const sonarTypes = [
-    "Localiser la direction de la caméra",
-    "Localiser une fissure",
-    "Localiser une cassure",
-    "Localiser un déboîtement",
-    "Localiser un désaxement",
-    "Localiser un bouchon",
-    "Autre",
+  const pieces = [
+    "Cuisine",
+    "Salle de bain",
+    "WC",
+    "Garage",
+    "Cave",
+    "Jardin",
+    "Salon",
+    "Cour",
+    "Devant la maison",
   ];
 
-  const pieces = ["Cuisine", "Salle de bain", "WC", "Garage", "Cave", "Jardin", "Autre"];
+  const etages = [
+    "Cave",
+    "Parking",
+    "RDC",
+    "Étage 1",
+    "Étage 2",
+    "Étage 3",
+    "Étage 4",
+    "Étage 5",
+  ];
+
+  const commonProblems = [
+    "RAS",
+    "Calcaire",
+    "Contre pente",
+    "Terre",
+    "Gravats",
+    "Canalisation remplie d’eau",
+    "Fissure",
+    "Cassure",
+  ];
+
+  const otherProblems = [
+    "Déboîtement et non étanche",
+    "Graisse",
+    "Canalisation désaxée et non étanche",
+    "Canalisation plus étanche",
+    "Racines",
+    "Affaissement",
+    "Sent bon dans la canalisation",
+    "CDV accessible",
+    "CDV enterrée",
+    "Fosse septique accessible",
+    "Fosse septique enterrée",
+    "Citerne d’eau de pluie accessible",
+    "Citerne d’eau de pluie enterrée",
+    "Dégraisseur accessible",
+    "Dégraisseur enterré",
+    "Rétrécissement de la canalisation",
+  ];
 
   // === Ajouter étape classique ===
   const addStep = async () => {
@@ -27,42 +69,20 @@ export default function CameraPathStepsBlock({ initialData, onChange }) {
     });
 
     if (!result.canceled) {
-      // ✅ Sauvegarde locale de la photo dans documentDirectory
       const src = result.assets[0].uri;
       const dest = FileSystem.documentDirectory + `photo_${Date.now()}.jpg`;
       await FileSystem.copyAsync({ from: src, to: dest });
 
       const uri = dest.startsWith("file://") ? dest : "file://" + dest;
 
-
-      const newStep = { type: "photo", photo: uri, point: "", detail: "" };
-      const updatedSteps = [...steps, newStep];
-      setSteps(updatedSteps);
-      onChange(updatedSteps);
-    }
-  };
-
-  // === Ajouter étape sonar ===
-  const addSonar = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.7,
-    });
-
-    if (!result.canceled) {
-      const src = result.assets[0].uri;
-      const dest = FileSystem.documentDirectory + `sonar_${Date.now()}.jpg`;
-      await FileSystem.copyAsync({ from: src, to: dest });
-
       const newStep = {
-        type: "sonar",
+        type: "photo",
         photo: uri,
         piece: "",
-        sonarType: "",
-        customSonar: "",
-        customPiece: "",
+        etage: "",
+        problems: [],
       };
-      
+
       const updatedSteps = [...steps, newStep];
       setSteps(updatedSteps);
       onChange(updatedSteps);
@@ -76,6 +96,19 @@ export default function CameraPathStepsBlock({ initialData, onChange }) {
     onChange(updatedSteps);
   };
 
+  const toggleProblem = (index, value) => {
+    const updatedSteps = [...steps];
+    let probs = [...updatedSteps[index].problems];
+    if (probs.includes(value)) {
+      probs = probs.filter((p) => p !== value);
+    } else {
+      probs.push(value);
+    }
+    updatedSteps[index].problems = probs;
+    setSteps(updatedSteps);
+    onChange(updatedSteps);
+  };
+
   const removeStep = (index) => {
     const updatedSteps = steps.filter((_, i) => i !== index);
     setSteps(updatedSteps);
@@ -83,9 +116,28 @@ export default function CameraPathStepsBlock({ initialData, onChange }) {
   };
 
   const SelectButton = ({ selected, label, onPress }) => (
-    <Button mode={selected ? "contained" : "outlined"} onPress={onPress} style={{ margin: 4 }}>
+    <Button
+      mode={selected ? "contained" : "outlined"}
+      onPress={onPress}
+      style={{ margin: 4, flexGrow: 1 }}
+    >
       {label}
     </Button>
+  );
+
+  const ToggleButton = ({ selected, label, onPress }) => (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        padding: 10,
+        backgroundColor: selected ? "#007AFF20" : "#f0f0f0",
+        borderRadius: 6,
+        margin: 4,
+        flexGrow: 1,
+      }}
+    >
+      <Text style={{ fontWeight: selected ? "bold" : "normal" }}>{label}</Text>
+    </TouchableOpacity>
   );
 
   return (
@@ -94,14 +146,9 @@ export default function CameraPathStepsBlock({ initialData, onChange }) {
         📸 Étapes du parcours caméra
       </Text>
 
-      <View style={{ flexDirection: "row", gap: 10, flexWrap: "wrap" }}>
-        <Button mode="contained" onPress={addStep}>
-          Ajouter une étape (photo)
-        </Button>
-        <Button mode="outlined" onPress={addSonar}>
-          Ajouter sonar
-        </Button>
-      </View>
+      <Button mode="contained" onPress={addStep}>
+        Ajouter une étape (photo)
+      </Button>
 
       <ScrollView horizontal>
         {steps.map((step, index) => (
@@ -114,7 +161,7 @@ export default function CameraPathStepsBlock({ initialData, onChange }) {
               borderColor: "#ddd",
               borderRadius: 10,
               marginRight: 10,
-              width: 280,
+              width: 300,
             }}
           >
             {step.photo && (
@@ -124,69 +171,72 @@ export default function CameraPathStepsBlock({ initialData, onChange }) {
               />
             )}
 
-            {step.type === "photo" && (
-              <>
-                <TextInput
-                  label="Point intermédiaire"
-                  value={step.point}
-                  onChangeText={(text) => updateStep(index, "point", text)}
-                  style={{ marginTop: 10 }}
+            {/* Pièce */}
+            <Text style={{ fontWeight: "bold", marginTop: 10 }}>📍 Pièce</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {pieces.map((p) => (
+                <SelectButton
+                  key={p}
+                  label={p}
+                  selected={step.piece === p}
+                  onPress={() => updateStep(index, "piece", p)}
                 />
-                <TextInput
-                  label="Détail (ex: coude, jonction...)"
-                  value={step.detail}
-                  onChangeText={(text) => updateStep(index, "detail", text)}
-                  style={{ marginTop: 10 }}
+              ))}
+            </View>
+
+            {/* Étage */}
+            <Text style={{ fontWeight: "bold", marginTop: 10 }}>🏢 Étage</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {etages.map((e) => (
+                <SelectButton
+                  key={e}
+                  label={e}
+                  selected={step.etage === e}
+                  onPress={() => updateStep(index, "etage", e)}
                 />
-              </>
-            )}
+              ))}
+            </View>
 
-            {step.type === "sonar" && (
-              <>
-                <Text style={{ fontWeight: "bold", marginTop: 10 }}>⚡ Sonar</Text>
-                <Text style={{ marginTop: 5 }}>📍 Pièce</Text>
-                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                  {pieces.map((p) => (
-                    <SelectButton
-                      key={p}
-                      label={p}
-                      selected={step.piece === p}
-                      onPress={() => updateStep(index, "piece", p)}
-                    />
-                  ))}
-                </View>
-                {step.piece === "Autre" && (
-                  <TextInput
-                    label="Préciser la pièce"
-                    value={step.customPiece}
-                    onChangeText={(text) => updateStep(index, "customPiece", text)}
-                    style={{ marginTop: 10 }}
+            {/* Problèmes */}
+            <Text style={{ fontWeight: "bold", marginTop: 10 }}>
+              ⚡ Problèmes détectés
+            </Text>
+
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+              {commonProblems.map((p) => (
+                <ToggleButton
+                  key={p}
+                  label={p}
+                  selected={step.problems.includes(p)}
+                  onPress={() => toggleProblem(index, p)}
+                />
+              ))}
+
+              {showMore &&
+                otherProblems.map((p) => (
+                  <ToggleButton
+                    key={p}
+                    label={p}
+                    selected={step.problems.includes(p)}
+                    onPress={() => toggleProblem(index, p)}
                   />
-                )}
+                ))}
+            </View>
 
-                <Text style={{ marginTop: 10 }}>🎯 Type sonar</Text>
-                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                  {sonarTypes.map((t) => (
-                    <SelectButton
-                      key={t}
-                      label={t}
-                      selected={step.sonarType === t}
-                      onPress={() => updateStep(index, "sonarType", t)}
-                    />
-                  ))}
-                </View>
-                {step.sonarType === "Autre" && (
-                  <TextInput
-                    label="Préciser utilisation sonar"
-                    value={step.customSonar}
-                    onChangeText={(text) => updateStep(index, "customSonar", text)}
-                    style={{ marginTop: 10 }}
-                  />
-                )}
-              </>
-            )}
+            <Button
+              mode="outlined"
+              onPress={() => setShowMore(!showMore)}
+              style={{ marginTop: 8 }}
+            >
+              {showMore ? "Voir moins" : "Voir plus"}
+            </Button>
 
-            <IconButton icon="delete" iconColor="red" size={24} onPress={() => removeStep(index)} />
+            <IconButton
+              icon="delete"
+              iconColor="red"
+              size={24}
+              onPress={() => removeStep(index)}
+            />
           </View>
         ))}
       </ScrollView>

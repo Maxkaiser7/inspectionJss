@@ -3,14 +3,16 @@ import * as Sharing from "expo-sharing";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
-import { createTable, openDatabase, saveInspection } from "./db/database";
-import { generatePdf } from "./utils/pdf";
-
 import CameraPathEndBlock from "./components/CameraPathPhotoEndBlock";
 import CameraPathStartBlock from "./components/CameraPathStartBlock";
 import CameraPathStepsBlock from "./components/CameraPathStepsBlock";
 import FacadeBlock from "./components/FacadeBlock";
 import MethodsUsedSection from "./components/MethodUseSection";
+import SolutionsBlock from "./components/SolutionBlock";
+import SonarPhotosBlock from "./components/SonarPhotoBlock";
+import { createTable, openDatabase, saveInspection } from "./db/database";
+import { generatePdf } from "./utils/pdf";
+
 
 export default function FormScreen() {
   const [db, setDb] = useState(null);
@@ -20,6 +22,9 @@ export default function FormScreen() {
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [photoBlocks, setPhotoBlocks] = useState([]);
+  const [sonarPhotos, setSonarPhotos] = useState([]);
+
+  const [solutions, setSolutions] = useState([]);
 
   // Photos façade / bâtiment
   const [facadePhotoUri, setFacadePhotoUri] = useState("");
@@ -82,7 +87,7 @@ export default function FormScreen() {
         clientName,
         address,
         phoneNumber,
-        photoUri: facadePhotoUri, // façade
+        photoUri: facadePhotoUri,
         buildingType,
         floor,
         methods,
@@ -90,8 +95,11 @@ export default function FormScreen() {
         cameraPathStart,
         cameraPathSteps,
         cameraPathEnd,
+        sonarPhotos,
+        solutions, // 🔥 on l’ajoute ici
         date: new Date().toLocaleString("fr-FR"),
       });
+      
 
       // ✉️ Partager le PDF
       await Sharing.shareAsync(pdfPath, {
@@ -140,10 +148,9 @@ export default function FormScreen() {
       />
 
       {/* Bloc façade */}
-      <FacadeBlock
-        initialData={facadePhotoUri}
-        onChange={setFacadePhotoUri}
-      />
+      <FacadeBlock initialData={facadePhotoUri} onChange={setFacadePhotoUri} />
+
+      <SonarPhotosBlock initialData={sonarPhotos} onChange={setSonarPhotos} />
 
       {/* Parcours caméra */}
       <CameraPathStartBlock
@@ -161,6 +168,7 @@ export default function FormScreen() {
 
       {/* Méthodes */}
       <MethodsUsedSection onChange={setMethods} />
+      <SolutionsBlock initialData={solutions} onChange={setSolutions} />
 
       <View style={{ marginVertical: 20 }}>
         <Button

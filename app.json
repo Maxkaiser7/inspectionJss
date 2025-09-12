@@ -7,17 +7,18 @@
     "icon": "./assets/images/icon.png",
     "scheme": "inspectionjss",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.inspectionJss"
+      "bundleIdentifier": "com.maxkaiser.inspectionjss"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.maxkaiser.inspectionjss",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
@@ -39,6 +40,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "55e47978-8d26-419c-89dd-94dfb4d63713"
+      }
     }
   }
 }
