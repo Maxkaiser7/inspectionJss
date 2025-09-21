@@ -1,4 +1,3 @@
-// FormScreen.js
 import * as Sharing from "expo-sharing";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
@@ -11,43 +10,30 @@ import MethodsUsedSection from "./components/MethodUseSection";
 import SolutionsBlock from "./components/SolutionBlock";
 import SonarPhotosBlock from "./components/SonarPhotoBlock";
 import { createTable, openDatabase, saveInspection } from "./db/database";
+import { useInspectionStore } from "./store/inspectionStore";
 import { generatePdf } from "./utils/pdf";
-
 
 export default function FormScreen() {
   const [db, setDb] = useState(null);
 
-  // Infos client
-  const [clientName, setClientName] = useState("");
-  const [address, setAddress] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [photoBlocks, setPhotoBlocks] = useState([]);
-  const [sonarPhotos, setSonarPhotos] = useState([]);
-
-  const [solutions, setSolutions] = useState([]);
-
-  // Photos façade / bâtiment
-  const [facadePhotoUri, setFacadePhotoUri] = useState("");
-  const [buildingType, setBuildingType] = useState("");
-  const [floor, setFloor] = useState("");
-
-  // Méthodes utilisées
-  const [methods, setMethods] = useState({});
-
-  // Parcours caméra
-  const [cameraPathStart, setCameraPathStart] = useState({
-    photo: null,
-    point: "",
-    detail: "",
-  });
-
-  const [cameraPathEnd, setCameraPathEnd] = useState({
-    photo: null,
-    point: "",
-    detail: "",
-  });
-
-  const [cameraPathSteps, setCameraPathSteps] = useState([]);
+  // ✅ Récupération de toutes les données depuis Zustand
+  const {
+    clientName,
+    address,
+    phoneNumber,
+    facadePhotoUri,
+    buildingType,
+    floor,
+    methods,
+    photoBlocks,
+    sonarPhotos,
+    cameraPathStart,
+    cameraPathSteps,
+    cameraPathEnd,
+    solutions,
+    setField,
+    reset,
+  } = useInspectionStore();
 
   useEffect(() => {
     const initDb = async () => {
@@ -96,10 +82,9 @@ export default function FormScreen() {
         cameraPathSteps,
         cameraPathEnd,
         sonarPhotos,
-        solutions, // 🔥 on l’ajoute ici
+        solutions,
         date: new Date().toLocaleString("fr-FR"),
       });
-      
 
       // ✉️ Partager le PDF
       await Sharing.shareAsync(pdfPath, {
@@ -108,6 +93,7 @@ export default function FormScreen() {
       });
 
       Alert.alert("Succès", "Inspection sauvegardée et PDF généré !");
+      reset(); // reset du formulaire après enregistrement
     } catch (error) {
       console.error("Erreur sauvegarde :", error);
       Alert.alert("Erreur", "Impossible de sauvegarder ou générer le PDF.");
@@ -119,56 +105,64 @@ export default function FormScreen() {
       <TextInput
         label="Nom du client"
         value={clientName}
-        onChangeText={setClientName}
+        onChangeText={(text) => setField("clientName", text)}
         style={styles.input}
       />
       <TextInput
         label="Adresse"
         value={address}
-        onChangeText={setAddress}
+        onChangeText={(text) => setField("address", text)}
         style={styles.input}
       />
       <TextInput
         label="Téléphone"
         value={phoneNumber}
-        onChangeText={setPhoneNumber}
+        onChangeText={(text) => setField("phoneNumber", text)}
         style={styles.input}
       />
       <TextInput
         label="Type de bâtiment"
         value={buildingType}
-        onChangeText={setBuildingType}
+        onChangeText={(text) => setField("buildingType", text)}
         style={styles.input}
       />
       <TextInput
         label="Étage"
         value={floor}
-        onChangeText={setFloor}
+        onChangeText={(text) => setField("floor", text)}
         style={styles.input}
       />
 
       {/* Bloc façade */}
-      <FacadeBlock initialData={facadePhotoUri} onChange={setFacadePhotoUri} />
+      <FacadeBlock
+        initialData={facadePhotoUri}
+        onChange={(val) => setField("facadePhotoUri", val)}
+      />
 
-      <SonarPhotosBlock initialData={sonarPhotos} onChange={setSonarPhotos} />
+      <SonarPhotosBlock
+        initialData={sonarPhotos}
+        onChange={(val) => setField("sonarPhotos", val)}
+      />
 
-      {/* Parcours caméra */}
       <CameraPathStartBlock
-        initialData={cameraPathStart}
-        onChange={setCameraPathStart}
+        initialData={cameraPathStart} 
+        onChange={(val) => setField("cameraPathStart", val)}
       />
       <CameraPathStepsBlock
         initialData={cameraPathSteps}
-        onChange={setCameraPathSteps}
+        onChange={(val) => setField("cameraPathSteps", val)}
       />
       <CameraPathEndBlock
         initialData={cameraPathEnd}
-        onChange={setCameraPathEnd}
+        onChange={(val) => setField("cameraPathEnd", val)}
       />
 
       {/* Méthodes */}
-      <MethodsUsedSection onChange={setMethods} />
-      <SolutionsBlock initialData={solutions} onChange={setSolutions} />
+      <MethodsUsedSection onChange={(val) => setField("methods", val)} />
+      <SolutionsBlock
+        initialData={solutions}
+        onChange={(val) => setField("solutions", val)}
+      />
 
       <View style={{ marginVertical: 20 }}>
         <Button

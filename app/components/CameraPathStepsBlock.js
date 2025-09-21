@@ -1,13 +1,27 @@
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
-import React, { useState } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Button, IconButton } from "react-native-paper";
 
 export default function CameraPathStepsBlock({ initialData, onChange }) {
   const [steps, setSteps] = useState(initialData || []);
   const [showMore, setShowMore] = useState(false);
 
+  useEffect(() => {
+    (async () => {
+      const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
+      const { status: mediaStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+      if (cameraStatus !== "granted" || mediaStatus !== "granted") {
+        Alert.alert(
+          "Permission requise",
+          "L’application a besoin de la caméra et de la galerie pour fonctionner."
+        );
+      }
+    })();
+  }, []);
+  
   const pieces = [
     "Cuisine",
     "Salle de bain",
@@ -64,9 +78,10 @@ export default function CameraPathStepsBlock({ initialData, onChange }) {
   // === Ajouter étape classique ===
   const addStep = async () => {
     let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: [ImagePicker.MediaTypeOptions.Images],
       quality: 0.7,
     });
+    
 
     if (!result.canceled) {
       const src = result.assets[0].uri;
