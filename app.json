@@ -47,6 +47,9 @@
       "enabled": true,
       "checkAutomatically": "ON_LOAD"
     },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "extra": {
       "router": {},
       "eas": {
