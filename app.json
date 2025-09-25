@@ -15,11 +15,10 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
+        "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.maxkaiser.inspectionjss",
-      "versionCode": 1
+      "package": "com.maxkaiser.inspectionjss"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +41,12 @@
     "experiments": {
       "typedRoutes": true
     },
+    "updates": {
+      "url": "https://u.expo.dev/55e47978-8d26-419c-89dd-94dfb4d63713",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD"
+    },
+    "runtimeVersion": "1.0.0",
     "extra": {
       "router": {},
       "eas": {
