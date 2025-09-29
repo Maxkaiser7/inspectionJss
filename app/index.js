@@ -1,5 +1,5 @@
 import * as Sharing from "expo-sharing";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import CameraPathEndBlock from "./components/CameraPathPhotoEndBlock";

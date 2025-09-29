@@ -35,11 +35,11 @@ export const saveInspection = async (
   facadePhotoUri,
   buildingType,
   floor,
-  methods,
-  inspectionPhotos,
-  cameraPathStart,
-  cameraPathSteps,
-  cameraPathEnd,
+  methods = "{}",
+  inspectionPhotos = "[]",
+  cameraPathStart = "{}",
+  cameraPathSteps = "[]",
+  cameraPathEnd = "{}",
   sonarPhotos = "[]",
   solutions = "[]"
 ) => {
@@ -55,13 +55,13 @@ export const saveInspection = async (
       facadePhotoUri,
       buildingType,
       floor,
-      methods,
-      inspectionPhotos,
-      cameraPathStart,
-      cameraPathSteps,
-      cameraPathEnd,
-      sonarPhotos,
-      solutions,
+      typeof methods === "string" ? methods : JSON.stringify(methods),
+      typeof inspectionPhotos === "string" ? inspectionPhotos : JSON.stringify(inspectionPhotos),
+      typeof cameraPathStart === "string" ? cameraPathStart : JSON.stringify(cameraPathStart),
+      typeof cameraPathSteps === "string" ? cameraPathSteps : JSON.stringify(cameraPathSteps),
+      typeof cameraPathEnd === "string" ? cameraPathEnd : JSON.stringify(cameraPathEnd),
+      typeof sonarPhotos === "string" ? sonarPhotos : JSON.stringify(sonarPhotos),
+      typeof solutions === "string" ? solutions : JSON.stringify(solutions),
       date,
     ]
   );
@@ -75,6 +75,10 @@ export const getAllInspections = async (db) => {
     methods: item.methods ? JSON.parse(item.methods) : {},
     sonarPhotos: item.sonarPhotos ? JSON.parse(item.sonarPhotos) : [],
     solutions: item.solutions ? JSON.parse(item.solutions) : [],
+    inspectionPhotos: item.inspectionPhotos ? JSON.parse(item.inspectionPhotos) : [],
+    cameraPathStart: item.cameraPathStart ? JSON.parse(item.cameraPathStart) : {},
+    cameraPathSteps: item.cameraPathSteps ? JSON.parse(item.cameraPathSteps) : [],
+    cameraPathEnd: item.cameraPathEnd ? JSON.parse(item.cameraPathEnd) : {},
   }));
 };
 

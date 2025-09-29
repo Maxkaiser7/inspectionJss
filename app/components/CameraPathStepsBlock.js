@@ -1,4 +1,3 @@
-import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useState } from "react";
 import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -28,15 +27,12 @@ export default function CameraPathStepsBlock({ initialData, onChange }) {
     "Dégraisseur enterré","Rétrécissement de la canalisation"
   ];
 
+  // Correction ici: ne fais plus le copyAsync
   const addStep = async () => {
-    const result = await ImagePicker.launchCameraAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality:0.7 });
+    const result = await ImagePicker.launchCameraAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images, quality: 0.7 });
     if (!result.canceled) {
-      const src = result.assets[0].uri;
-      const dest = FileSystem.documentDirectory + `photo_${Date.now()}.jpg`;
-      await FileSystem.copyAsync({ from: src, to: dest });
-      const uri = dest.startsWith("file://") ? dest : "file://" + dest;
-
-      const newStep = { photo: uri, piece:"", etage:"", problems:[] };
+      const uri = result.assets[0].uri;
+      const newStep = { photo: uri, piece: "", etage: "", problems: [] };
       const updated = [...steps, newStep];
       setSteps(updated);
       onChange && onChange(updated);

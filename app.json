@@ -3,6 +3,7 @@
     "name": "inspectionJss",
     "slug": "inspectionJss",
     "version": "1.0.0",
+    "runtimeVersion": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "inspectionjss",
@@ -10,7 +11,8 @@
     "permissions": ["CAMERA", "MEDIA_LIBRARY"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.maxkaiser.inspectionjss"
+      "bundleIdentifier": "com.maxkaiser.inspectionjss",
+      "runtimeVersion": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +20,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.maxkaiser.inspectionjss"
+      "package": "com.maxkaiser.inspectionjss",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
@@ -46,7 +49,6 @@
       "enabled": true,
       "checkAutomatically": "ON_LOAD"
     },
-    "runtimeVersion": "1.0.0",
     "extra": {
       "router": {},
       "eas": {
